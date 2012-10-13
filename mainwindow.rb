@@ -133,14 +133,16 @@ class MainWindow < Qt::MainWindow
 		file = @commitFiles1.item(@ui.commitFiles1.selectionModel.currentIndex.row, 0).text
 		folder = @commitFiles1.item(@ui.commitFiles1.selectionModel.currentIndex.row, 1).text
 
-		countSheets(@tree1, file, folder, @ui.sheetComboBox1)
+		exportFile(@tree1, file, folder)
+		countSheets(@ui.sheetComboBox1)
 	end
 
 	def on_getSheetCountButton2_clicked()
 		file = @commitFiles2.item(@ui.commitFiles2.selectionModel.currentIndex.row, 0).text
 		folder = @commitFiles2.item(@ui.commitFiles2.selectionModel.currentIndex.row, 1).text
 
-		countSheets(@tree2, file, folder, @ui.sheetComboBox2)
+		exportFile(@tree2, file, folder)
+		countSheets(@ui.sheetComboBox2)
 	end
 
 	def on_createDiffImageButton_clicked()
@@ -177,10 +179,15 @@ class MainWindow < Qt::MainWindow
 				end
 			end
 			
-			exportFile(@tree1, file1, folder1, sheet1, "old.png")
-			exportFile(@tree2, file2, folder2, sheet2, "new.png")
+			exportFile(@tree1, file1, folder1)
+			exportPng(sheet1, "old.png")
+			exportFile(@tree2, file2, folder2)
+			exportPng(sheet2, "new.png")
 
 			createDiffImage("#{@tempPath}/old.png", "#{@tempPath}/new.png", "#{@tempPath}/diff.png", extension)
+
+			FileUtils.rm(Dir.glob("#{@tempPath}/old.png"))
+			FileUtils.rm(Dir.glob("#{@tempPath}/new.png"))
 
 			if @ui.oImageViewer.text == ""
 				`#{@tempPath}/diff.png`
@@ -258,11 +265,39 @@ class MainWindow < Qt::MainWindow
 
 	########## Eagle functions ##########
 
+	def countSheets(comboBox)
+		`"#{@ui.oEagleBinaryEdit.text}" -C "RUN #{@currentPath}/countSheets.ulp #{@tempPath}/sheetCount.txt; QUIT" #{@tempPath}/schematic.sch`
 
+		file = File.new("#{@tempPath}/sheetCount.txt", "r")
+		sheets = file.readline.chomp.to_i
+		file.close
+
+		for i in 1..sheets do
+			comboBox.addItem(i.to_s)
+		end
+
+		comboBox.setEnabled(true)
+
+		FileUtils.rm(Dir.glob("#{@tempPath}/schematic.sch"))
+		FileUtils.rm(Dir.glob("#{@tempPath}/sheetCount.txt"))
+	end
+
+
+	def exportPng(sheet, target)
+		if sheet == nil
+			`"#{@ui.oEagleBinaryEdit.text}" -C 'EXPORT IMAGE #{@tempPath}/#{target} #{@ui.oBoardEdit.text}; QUIT' #{@tempPath}/board.brd`
+
+			FileUtils.rm(Dir.glob("#{@tempPath}/board.brd"))
+		else
+			`"#{@ui.oEagleBinaryEdit.text}" -C 'EDIT .s#{sheet}; EXPORT IMAGE #{@tempPath}/#{target} #{@ui.oSchematicEdit.text}; QUIT' #{@tempPath}/schematic.sch`
+
+			FileUtils.rm(Dir.glob("#{@tempPath}/schematic.sch"))
+		end
+	end
 
 	########## Repo functions ##########
 
-	def exportFile(tree, file, folder, sheet, target, currentFolder = "/")
+	def exportFile(tree, file, folder, currentFolder = "/")
 		if tree.name != nil
 			currentFolder = currentFolder + tree.name.to_s + "/"
 		end
@@ -270,65 +305,22 @@ class MainWindow < Qt::MainWindow
 		tree.contents.each do |content|
 			if content.kind_of? Grit::Blob
 				if content.name == file and currentFolder == folder
-					FileUtils.rm(Dir.glob("#{@tempPath}/#{target}"))
-
-					if sheet == nil
+					type = content.name.split('.').last
+					
+					if type == 'brd'
 						file = File.new("#{@tempPath}/board.brd", "w")
 						file.puts(content.data)
 						file.close
-
-						`"#{@ui.oEagleBinaryEdit.text}" -C 'EXPORT IMAGE #{@tempPath}/#{target} #{@ui.oBoardEdit.text}; QUIT' #{@tempPath}/board.brd`
-
-						FileUtils.rm(Dir.glob("#{@tempPath}/board.brd"))
 					else
 						file = File.new("#{@tempPath}/schematic.sch", "w")
 						file.puts(content.data)
 						file.close
-
-						`"#{@ui.oEagleBinaryEdit.text}" -C 'EDIT .s#{sheet}; EXPORT IMAGE #{@tempPath}/#{target} #{@ui.oSchematicEdit.text}; QUIT' #{@tempPath}/schematic.sch`
-
-						FileUtils.rm(Dir.glob("#{@tempPath}/schematic.sch"))
 					end
 				end
 			end
 
 			if content.kind_of? Grit::Tree
-				exportFile(content, file, folder, sheet, target, currentFolder)
-			end
-		end
-	end
-
-	def countSheets(tree, file, folder, comboBox, currentFolder = "/")
-		if tree.name != nil
-			currentFolder = currentFolder + tree.name.to_s + "/"
-		end
-
-		tree.contents.each do |content|
-			if content.kind_of? Grit::Blob
-				if content.name == file and currentFolder == folder
-					file = File.new("#{@tempPath}/countSheets.sch", "w")
-					file.puts(content.data)
-					file.close
-
-					`"#{@ui.oEagleBinaryEdit.text}" -C "RUN #{@currentPath}/countSheets.ulp #{@tempPath}/sheetCount.txt; QUIT" #{@tempPath}/countSheets.sch`
-
-					file = File.new("#{@tempPath}/sheetCount.txt", "r")
-					sheets = file.readline.chomp.to_i
-					file.close
-
-					for i in 1..sheets do
-							comboBox.addItem(i.to_s)
-					end
-
-					comboBox.setEnabled(true)
-
-					FileUtils.rm(Dir.glob("#{@tempPath}/countSheets.sch"))
-					FileUtils.rm(Dir.glob("#{@tempPath}/sheetCount.txt"))
-				end
-			end
-
-			if content.kind_of? Grit::Tree
-				countSheets(content, file, folder, comboBox, currentFolder)
+				exportFile(content, file, folder, currentFolder)
 			end
 		end
 	end
