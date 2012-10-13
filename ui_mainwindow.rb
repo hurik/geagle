@@ -1,7 +1,7 @@
 =begin
 ** Form generated from reading ui file 'mainwindow.ui'
 **
-** Created: Sat Oct 13 00:15:37 2012
+** Created: Sun Oct 14 01:11:35 2012
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling ui file!
@@ -38,7 +38,7 @@ class Ui_MainWindow
     attr_reader :sheetEdit2
     attr_reader :createDiffImageButton
     attr_reader :optionsTab
-    attr_reader :verticalLayout_7
+    attr_reader :verticalLayout_8
     attr_reader :oGroupBox1
     attr_reader :horizontalLayout
     attr_reader :oEagleBinaryEdit
@@ -61,6 +61,9 @@ class Ui_MainWindow
     attr_reader :oGroupBox4
     attr_reader :verticalLayout_6
     attr_reader :oImageViewer
+    attr_reader :oGroupBox5
+    attr_reader :verticalLayout_7
+    attr_reader :oHideTimezone
     attr_reader :oHorizontalLayout1
     attr_reader :oHorizontalSpacer
     attr_reader :oSaveButton
@@ -139,6 +142,8 @@ class Ui_MainWindow
     @repoLog1.editTriggers = Qt::AbstractItemView::NoEditTriggers
     @repoLog1.selectionMode = Qt::AbstractItemView::SingleSelection
     @repoLog1.selectionBehavior = Qt::AbstractItemView::SelectRows
+    @repoLog1.verticalScrollMode = Qt::AbstractItemView::ScrollPerItem
+    @repoLog1.horizontalScrollMode = Qt::AbstractItemView::ScrollPerPixel
     @repoLog1.sortingEnabled = false
 
     @verticalLayout_2.addWidget(@repoLog1)
@@ -148,6 +153,7 @@ class Ui_MainWindow
     @commitFiles1.editTriggers = Qt::AbstractItemView::NoEditTriggers
     @commitFiles1.selectionMode = Qt::AbstractItemView::SingleSelection
     @commitFiles1.selectionBehavior = Qt::AbstractItemView::SelectRows
+    @commitFiles1.horizontalScrollMode = Qt::AbstractItemView::ScrollPerPixel
     @commitFiles1.sortingEnabled = false
 
     @verticalLayout_2.addWidget(@commitFiles1)
@@ -190,6 +196,8 @@ class Ui_MainWindow
     @repoLog2.editTriggers = Qt::AbstractItemView::NoEditTriggers
     @repoLog2.selectionMode = Qt::AbstractItemView::SingleSelection
     @repoLog2.selectionBehavior = Qt::AbstractItemView::SelectRows
+    @repoLog2.verticalScrollMode = Qt::AbstractItemView::ScrollPerItem
+    @repoLog2.horizontalScrollMode = Qt::AbstractItemView::ScrollPerPixel
 
     @verticalLayout_4.addWidget(@repoLog2)
 
@@ -198,6 +206,7 @@ class Ui_MainWindow
     @commitFiles2.editTriggers = Qt::AbstractItemView::NoEditTriggers
     @commitFiles2.selectionMode = Qt::AbstractItemView::SingleSelection
     @commitFiles2.selectionBehavior = Qt::AbstractItemView::SelectRows
+    @commitFiles2.horizontalScrollMode = Qt::AbstractItemView::ScrollPerPixel
 
     @verticalLayout_4.addWidget(@commitFiles2)
 
@@ -239,10 +248,10 @@ class Ui_MainWindow
     @tabWidget.addTab(@createDiffImageTab, Qt::Application.translate("MainWindow", "Create diff image", nil, Qt::Application::UnicodeUTF8))
     @optionsTab = Qt::Widget.new()
     @optionsTab.objectName = "optionsTab"
-    @verticalLayout_7 = Qt::VBoxLayout.new(@optionsTab)
-    @verticalLayout_7.spacing = 6
-    @verticalLayout_7.margin = 11
-    @verticalLayout_7.objectName = "verticalLayout_7"
+    @verticalLayout_8 = Qt::VBoxLayout.new(@optionsTab)
+    @verticalLayout_8.spacing = 6
+    @verticalLayout_8.margin = 11
+    @verticalLayout_8.objectName = "verticalLayout_8"
     @oGroupBox1 = Qt::GroupBox.new(@optionsTab)
     @oGroupBox1.objectName = "oGroupBox1"
     @horizontalLayout = Qt::HBoxLayout.new(@oGroupBox1)
@@ -260,7 +269,7 @@ class Ui_MainWindow
     @horizontalLayout.addWidget(@oEagleBinaryButton)
 
 
-    @verticalLayout_7.addWidget(@oGroupBox1)
+    @verticalLayout_8.addWidget(@oGroupBox1)
 
     @oGroupBox2 = Qt::GroupBox.new(@optionsTab)
     @oGroupBox2.objectName = "oGroupBox2"
@@ -291,7 +300,7 @@ class Ui_MainWindow
     @formLayout.setWidget(1, Qt::FormLayout::FieldRole, @oBoardEdit)
 
 
-    @verticalLayout_7.addWidget(@oGroupBox2)
+    @verticalLayout_8.addWidget(@oGroupBox2)
 
     @oGroupBox3 = Qt::GroupBox.new(@optionsTab)
     @oGroupBox3.objectName = "oGroupBox3"
@@ -339,7 +348,7 @@ class Ui_MainWindow
     @verticalLayout.addLayout(@oHorizontalLayout3)
 
 
-    @verticalLayout_7.addWidget(@oGroupBox3)
+    @verticalLayout_8.addWidget(@oGroupBox3)
 
     @oGroupBox4 = Qt::GroupBox.new(@optionsTab)
     @oGroupBox4.objectName = "oGroupBox4"
@@ -353,7 +362,22 @@ class Ui_MainWindow
     @verticalLayout_6.addWidget(@oImageViewer)
 
 
-    @verticalLayout_7.addWidget(@oGroupBox4)
+    @verticalLayout_8.addWidget(@oGroupBox4)
+
+    @oGroupBox5 = Qt::GroupBox.new(@optionsTab)
+    @oGroupBox5.objectName = "oGroupBox5"
+    @verticalLayout_7 = Qt::VBoxLayout.new(@oGroupBox5)
+    @verticalLayout_7.spacing = 6
+    @verticalLayout_7.margin = 11
+    @verticalLayout_7.objectName = "verticalLayout_7"
+    @oHideTimezone = Qt::CheckBox.new(@oGroupBox5)
+    @oHideTimezone.objectName = "oHideTimezone"
+    @oHideTimezone.checked = true
+
+    @verticalLayout_7.addWidget(@oHideTimezone)
+
+
+    @verticalLayout_8.addWidget(@oGroupBox5)
 
     @oHorizontalLayout1 = Qt::HBoxLayout.new()
     @oHorizontalLayout1.spacing = 6
@@ -368,11 +392,11 @@ class Ui_MainWindow
     @oHorizontalLayout1.addWidget(@oSaveButton)
 
 
-    @verticalLayout_7.addLayout(@oHorizontalLayout1)
+    @verticalLayout_8.addLayout(@oHorizontalLayout1)
 
     @oVerticalSpacer = Qt::SpacerItem.new(20, 40, Qt::SizePolicy::Minimum, Qt::SizePolicy::Expanding)
 
-    @verticalLayout_7.addItem(@oVerticalSpacer)
+    @verticalLayout_8.addItem(@oVerticalSpacer)
 
     @tabWidget.addTab(@optionsTab, Qt::Application.translate("MainWindow", "Options", nil, Qt::Application::UnicodeUTF8))
     @tab = Qt::Widget.new()
@@ -443,6 +467,8 @@ class Ui_MainWindow
     @oRepoPresetButton.text = Qt::Application.translate("MainWindow", "Select", nil, Qt::Application::UnicodeUTF8)
     @oRepoPresetBranchLabel.text = Qt::Application.translate("MainWindow", "Branch", nil, Qt::Application::UnicodeUTF8)
     @oGroupBox4.title = Qt::Application.translate("MainWindow", "Image Viewer", nil, Qt::Application::UnicodeUTF8)
+    @oGroupBox5.title = Qt::Application.translate("MainWindow", "Repo view options", nil, Qt::Application::UnicodeUTF8)
+    @oHideTimezone.text = Qt::Application.translate("MainWindow", "Hide timezone in repo view", nil, Qt::Application::UnicodeUTF8)
     @oSaveButton.text = Qt::Application.translate("MainWindow", "Save", nil, Qt::Application::UnicodeUTF8)
     @tabWidget.setTabText(@tabWidget.indexOf(@optionsTab), Qt::Application.translate("MainWindow", "Options", nil, Qt::Application::UnicodeUTF8))
     @tabWidget.setTabText(@tabWidget.indexOf(@tab), Qt::Application.translate("MainWindow", "Info", nil, Qt::Application::UnicodeUTF8))

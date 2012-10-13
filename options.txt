@@ -2,5 +2,6 @@
 150
 300
 /media/sf_Gemeinsamer_Ordner/ARMrider-Hardware
-master3434
+master
 shotwell
+true

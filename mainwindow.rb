@@ -61,7 +61,7 @@ class MainWindow < Qt::MainWindow
 	
 	def on_repoLog1_clicked()
 		if @ui.repoLog1.selectionModel.currentIndex.row >= 0
-			@tree1 = @repo.commit(@commitsLog.item(@ui.repoLog1.selectionModel.currentIndex.row).text).tree
+			@tree1 = @repo.commit(@commitsLog.item(@ui.repoLog1.selectionModel.currentIndex.row, 2).text).tree
 			
 			@commitFiles1 = Qt::StandardItemModel.new(countFilesInCommit(@tree1), 2, self)
 			
@@ -72,12 +72,13 @@ class MainWindow < Qt::MainWindow
 			
 			@ui.commitFiles1.setModel(@commitFiles1)
 			@ui.commitFiles1.resizeColumnsToContents()
+			@ui.commitFiles1.resizeRowsToContents()
 		end
 	end
 
 	def on_repoLog2_clicked()
 		if @ui.repoLog2.selectionModel.currentIndex.row >= 0
-			@tree2 = @repo.commit(@commitsLog.item(@ui.repoLog2.selectionModel.currentIndex.row).text).tree
+			@tree2 = @repo.commit(@commitsLog.item(@ui.repoLog2.selectionModel.currentIndex.row, 2).text).tree
 			
 			@commitFiles2 = Qt::StandardItemModel.new(countFilesInCommit(@tree2), 2, self)
 			
@@ -88,6 +89,7 @@ class MainWindow < Qt::MainWindow
 			
 			@ui.commitFiles2.setModel(@commitFiles2)
 			@ui.commitFiles2.resizeColumnsToContents()
+			@ui.commitFiles2.resizeRowsToContents()
 		end
 	end
 
@@ -254,6 +256,10 @@ class MainWindow < Qt::MainWindow
 		output.save(diffImage)
 	end
 
+	########## Eagle functions ##########
+
+
+
 	########## Repo functions ##########
 
 	def exportFile(tree, file, folder, sheet, target, currentFolder = "/")
@@ -368,16 +374,21 @@ class MainWindow < Qt::MainWindow
 
 		@commitsLog = Qt::StandardItemModel.new(@repo.commits(@ui.selectBranchComboBox.currentText(), false).size, 3, self)
 
-		@commitsLog.setHorizontalHeaderItem(0, Qt::StandardItem.new("commit"))
-		@commitsLog.setHorizontalHeaderItem(1, Qt::StandardItem.new("date"))
-		@commitsLog.setHorizontalHeaderItem(2, Qt::StandardItem.new("message"))
+		@commitsLog.setHorizontalHeaderItem(0, Qt::StandardItem.new("date"))
+		@commitsLog.setHorizontalHeaderItem(1, Qt::StandardItem.new("message"))
+		@commitsLog.setHorizontalHeaderItem(2, Qt::StandardItem.new("commit"))
 
 		row = 0
 		
 		@repo.commits(branch, false).each do |commit|
-			@commitsLog.setItem(row, 0, Qt::StandardItem.new(commit.id.to_s))
-			@commitsLog.setItem(row, 1, Qt::StandardItem.new(commit.date.to_s))
-			@commitsLog.setItem(row, 2, Qt::StandardItem.new(commit.message.to_s))
+			if @ui.oHideTimezone.isChecked()
+				@commitsLog.setItem(row, 0, Qt::StandardItem.new(commit.date.to_s[0..18]))
+			else
+				@commitsLog.setItem(row, 0, Qt::StandardItem.new(commit.date.to_s))
+			end
+			
+			@commitsLog.setItem(row, 1, Qt::StandardItem.new(commit.message.to_s))
+			@commitsLog.setItem(row, 2, Qt::StandardItem.new(commit.id.to_s))
 			
 			row = row + 1
 		end
@@ -385,10 +396,10 @@ class MainWindow < Qt::MainWindow
 		@ui.repoLog1.setModel(@commitsLog)
 		@ui.repoLog2.setModel(@commitsLog)
 
-		@ui.repoLog1.resizeColumnToContents(1)
-		@ui.repoLog1.resizeColumnToContents(2)
-		@ui.repoLog2.resizeColumnToContents(1)
-		@ui.repoLog2.resizeColumnToContents(2)
+		@ui.repoLog1.resizeColumnsToContents()
+		@ui.repoLog1.resizeRowsToContents()
+		@ui.repoLog2.resizeColumnsToContents()
+		@ui.repoLog2.resizeRowsToContents()
 
 		@ui.statusBar.showMessage("Opend branch ...", 5000) 
 	end
@@ -453,6 +464,7 @@ class MainWindow < Qt::MainWindow
 		optionsFile.puts(@ui.oRepoPresetEdit.text)
 		optionsFile.puts(@ui.oRepoPresetBranchEdit.text)
 		optionsFile.puts(@ui.oImageViewer.text)
+		optionsFile.puts(@ui.oHideTimezone.isChecked())
 		optionsFile.close
 
 		@ui.statusBar.showMessage("Option saved!", 5000) 
@@ -466,7 +478,16 @@ class MainWindow < Qt::MainWindow
 		@ui.oRepoPresetEdit.text = optionsFile.readline.chomp
 		@ui.oRepoPresetBranchEdit.text = optionsFile.readline.chomp
 		@ui.oImageViewer.text = optionsFile.readline.chomp
+		@ui.oHideTimezone.setChecked(stringToBool(optionsFile.readline.chomp))
 		optionsFile.close
+	end
+
+	def stringToBool(string)
+		if string == "false"
+			return false
+		else
+			return true
+		end
 	end
 
 end
