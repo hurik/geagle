@@ -7,6 +7,7 @@ include ChunkyPNG::Color
 class MainWindow < Qt::MainWindow
 
 	slots	'on_selectRepoButton_clicked()',
+			'on_selectRepoEdit_returnPressed()',
 			'on_selectBranchButton_clicked()',
 			'on_repoLog1_clicked()',
 			'on_commitFiles1_clicked()',
@@ -34,6 +35,10 @@ class MainWindow < Qt::MainWindow
 		@currentPath = Dir.getwd
 		@tempPath = @currentPath + "/temp"
 
+		if !File.directory? (@tempPath)
+			Dir.mkdir(@tempPath)
+		end
+
 		loadOptions()
 
 		@ui.selectRepoEdit.text = @ui.oRepoPresetEdit.text
@@ -52,6 +57,10 @@ class MainWindow < Qt::MainWindow
 	def on_selectRepoButton_clicked()
 		@ui.selectRepoEdit.text = Qt::FileDialog.getExistingDirectory(self, "Open repo", Qt::Dir::homePath(), Qt::FileDialog::ShowDirsOnly)
 		
+		openRepo()
+	end
+
+	def on_selectRepoEdit_returnPressed()
 		openRepo()
 	end
 	
@@ -147,6 +156,8 @@ class MainWindow < Qt::MainWindow
 
 	def on_createDiffImageButton_clicked()
 		if @ui.commitFiles1.selectionModel.currentIndex.row >= 0 and @ui.commitFiles2.selectionModel.currentIndex.row >= 0
+			@ui.statusBar.showMessage("Creating diff image! This take some time ...", 5000) 
+
 			file1 = @commitFiles1.item(@ui.commitFiles1.selectionModel.currentIndex.row, 0).text
 			folder1 = @commitFiles1.item(@ui.commitFiles1.selectionModel.currentIndex.row, 1).text
 			sheet1 = nil
@@ -186,8 +197,7 @@ class MainWindow < Qt::MainWindow
 
 			createDiffImage("#{@tempPath}/old.png", "#{@tempPath}/new.png", "#{@tempPath}/diff.png", extension)
 
-			FileUtils.rm(Dir.glob("#{@tempPath}/old.png"))
-			FileUtils.rm(Dir.glob("#{@tempPath}/new.png"))
+			@ui.statusBar.showMessage("Diff image ready!", 5000) 
 
 			if @ui.oImageViewer.text == ""
 				`#{@tempPath}/diff.png`
@@ -199,6 +209,7 @@ class MainWindow < Qt::MainWindow
 
 	########## Image function ##########
 
+	# Create the diff image
 	def createDiffImage(oldImage, newImage, diffImage, extension)
 		FileUtils.rm(Dir.glob(diffImage))
 
@@ -261,10 +272,14 @@ class MainWindow < Qt::MainWindow
 		end
 
 		output.save(diffImage)
+
+		FileUtils.rm(Dir.glob("#{@tempPath}/old.png"))
+		FileUtils.rm(Dir.glob("#{@tempPath}/new.png"))
 	end
 
 	########## Eagle functions ##########
 
+	# Count the sheets
 	def countSheets(comboBox)
 		`"#{@ui.oEagleBinaryEdit.text}" -C "RUN #{@currentPath}/countSheets.ulp #{@tempPath}/sheetCount.txt; QUIT" #{@tempPath}/schematic.sch`
 
@@ -282,7 +297,7 @@ class MainWindow < Qt::MainWindow
 		FileUtils.rm(Dir.glob("#{@tempPath}/sheetCount.txt"))
 	end
 
-
+	# Export image from eagle
 	def exportPng(sheet, target)
 		if sheet == nil
 			`"#{@ui.oEagleBinaryEdit.text}" -C 'EXPORT IMAGE #{@tempPath}/#{target} #{@ui.oBoardEdit.text}; QUIT' #{@tempPath}/board.brd`
@@ -297,34 +312,7 @@ class MainWindow < Qt::MainWindow
 
 	########## Repo functions ##########
 
-	def exportFile(tree, file, folder, currentFolder = "/")
-		if tree.name != nil
-			currentFolder = currentFolder + tree.name.to_s + "/"
-		end
-
-		tree.contents.each do |content|
-			if content.kind_of? Grit::Blob
-				if content.name == file and currentFolder == folder
-					type = content.name.split('.').last
-					
-					if type == 'brd'
-						file = File.new("#{@tempPath}/board.brd", "w")
-						file.puts(content.data)
-						file.close
-					else
-						file = File.new("#{@tempPath}/schematic.sch", "w")
-						file.puts(content.data)
-						file.close
-					end
-				end
-			end
-
-			if content.kind_of? Grit::Tree
-				exportFile(content, file, folder, currentFolder)
-			end
-		end
-	end
-
+	# Open repo
 	def openRepo()
 		@ui.selectBranchComboBox.clear()
 
@@ -346,9 +334,10 @@ class MainWindow < Qt::MainWindow
 		@ui.selectBranchComboBox.setEnabled(true)
 		@ui.selectBranchButton.setEnabled(true)
 
-		@ui.statusBar.showMessage("Opend repo ...", 5000) 
+		@ui.statusBar.showMessage("Repo loaded!", 5000) 
 	end
 
+	# Open branch
 	def selectBranch(branch)
 		branchExist = false
 
@@ -393,9 +382,28 @@ class MainWindow < Qt::MainWindow
 		@ui.repoLog2.resizeColumnsToContents()
 		@ui.repoLog2.resizeRowsToContents()
 
-		@ui.statusBar.showMessage("Opend branch ...", 5000) 
+		@ui.statusBar.showMessage("Branch loaded!", 5000) 
 	end
 
+	# Counting the files in a commit
+	def countFilesInCommit(tree, filesCount = 0)
+		tree.contents.each do |content|
+			if content.kind_of? Grit::Blob
+				type = content.name.split('.').last
+				if type == 'sch' or type == 'brd'
+					filesCount = filesCount + 1
+				end
+			end
+
+			if content.kind_of? Grit::Tree
+				filesCount = countFilesInCommit(content, filesCount)
+			end
+		end
+	
+		return filesCount
+	end
+
+	# Show all .brd and .sch in the commit
 	def parseTree(tree, commitFiles, currentFolder = "/", row = 0)
 		if tree.name != nil
 			currentFolder = currentFolder + tree.name.to_s + "/"
@@ -420,23 +428,34 @@ class MainWindow < Qt::MainWindow
 		return row
 	end
 
-	# Counting the files in a commit
-	def countFilesInCommit(tree, filesCount = 0)
+	# Export file from commit
+	def exportFile(tree, file, folder, currentFolder = "/")
+		if tree.name != nil
+			currentFolder = currentFolder + tree.name.to_s + "/"
+		end
+
 		tree.contents.each do |content|
 			if content.kind_of? Grit::Blob
-				type = content.name.split('.').last
-				if type == 'sch' or type == 'brd'
-					filesCount = filesCount + 1
+				if content.name == file and currentFolder == folder
+					type = content.name.split('.').last
+					
+					if type == 'brd'
+						file = File.new("#{@tempPath}/board.brd", "w")
+						file.puts(content.data)
+						file.close
+					else
+						file = File.new("#{@tempPath}/schematic.sch", "w")
+						file.puts(content.data)
+						file.close
+					end
 				end
 			end
 
 			if content.kind_of? Grit::Tree
-				filesCount = countFilesInCommit(content, filesCount)
+				exportFile(content, file, folder, currentFolder)
 			end
 		end
-	
-		return filesCount
-	end	
+	end
 
 	########## Option functions ##########
 
