@@ -427,10 +427,31 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="infoTab">
        <attribute name="title">
         <string>Info</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_9">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>&lt;p&gt;&lt;span style=&quot;font-size:16pt&quot;&gt;&lt;strong&gt;Geagle&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Description:&lt;/strong&gt;&lt;br /&gt;If you are working on an CadSoft EAGLE project with a team and you are tracking your progress with Git, this little programm can help you to see what your team has changed. It makes an diff image which shows the changes on the schematics and boards between the commits.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Homepage:&lt;/strong&gt;&lt;br /&gt;&lt;a href=&quot;https://github.com/hurik/geagle&quot;&gt;https://github.com/hurik/geagle&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Author:&lt;/strong&gt;&lt;br /&gt;  Andreas Giemza&lt;br /&gt;&lt;a href=&quot;mailto:andreas@giemza.net&quot;&gt;andreas@giemza.net&lt;/a&gt;&lt;br /&gt;&lt;a href=&quot;http://www.hurik.de&quot;&gt;http://www.hurik.de&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Credits:&lt;/strong&gt;&lt;br /&gt;This little programm based on &lt;a href=&quot;https://gitorious.org/gitedaous/eagle-converter&quot;&gt;eagle-converter&lt;/a&gt; by Patrick Franken, he made the countSheets.ulp and the eagle calls.&lt;/p&gt;</string>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::AutoText</enum>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignHCenter|Qt::AlignTop</set>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+          <property name="openExternalLinks">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -440,7 +461,6 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
-  <tabstop>tabWidget</tabstop>
   <tabstop>selectRepoEdit</tabstop>
   <tabstop>selectRepoButton</tabstop>
   <tabstop>selectBranchComboBox</tabstop>
@@ -456,6 +476,7 @@
   <tabstop>sheetComboBox2</tabstop>
   <tabstop>sheetEdit2</tabstop>
   <tabstop>createDiffImageButton</tabstop>
+  <tabstop>tabWidget</tabstop>
   <tabstop>oEagleBinaryEdit</tabstop>
   <tabstop>oEagleBinaryButton</tabstop>
   <tabstop>oSchematicEdit</tabstop>
@@ -464,6 +485,7 @@
   <tabstop>oRepoPresetButton</tabstop>
   <tabstop>oRepoPresetBranchEdit</tabstop>
   <tabstop>oImageViewer</tabstop>
+  <tabstop>oHideTimezone</tabstop>
   <tabstop>oSaveButton</tabstop>
  </tabstops>
  <resources/>

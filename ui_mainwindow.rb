@@ -1,7 +1,7 @@
 =begin
 ** Form generated from reading ui file 'mainwindow.ui'
 **
-** Created: Sun Oct 14 01:11:35 2012
+** Created: Sun Oct 14 05:54:02 2012
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling ui file!
@@ -68,7 +68,9 @@ class Ui_MainWindow
     attr_reader :oHorizontalSpacer
     attr_reader :oSaveButton
     attr_reader :oVerticalSpacer
-    attr_reader :tab
+    attr_reader :infoTab
+    attr_reader :verticalLayout_9
+    attr_reader :label
     attr_reader :statusBar
 
     def setupUi(mainWindow)
@@ -399,9 +401,22 @@ class Ui_MainWindow
     @verticalLayout_8.addItem(@oVerticalSpacer)
 
     @tabWidget.addTab(@optionsTab, Qt::Application.translate("MainWindow", "Options", nil, Qt::Application::UnicodeUTF8))
-    @tab = Qt::Widget.new()
-    @tab.objectName = "tab"
-    @tabWidget.addTab(@tab, Qt::Application.translate("MainWindow", "Info", nil, Qt::Application::UnicodeUTF8))
+    @infoTab = Qt::Widget.new()
+    @infoTab.objectName = "infoTab"
+    @verticalLayout_9 = Qt::VBoxLayout.new(@infoTab)
+    @verticalLayout_9.spacing = 6
+    @verticalLayout_9.margin = 11
+    @verticalLayout_9.objectName = "verticalLayout_9"
+    @label = Qt::Label.new(@infoTab)
+    @label.objectName = "label"
+    @label.textFormat = Qt::AutoText
+    @label.alignment = Qt::AlignHCenter|Qt::AlignTop
+    @label.wordWrap = true
+    @label.openExternalLinks = true
+
+    @verticalLayout_9.addWidget(@label)
+
+    @tabWidget.addTab(@infoTab, Qt::Application.translate("MainWindow", "Info", nil, Qt::Application::UnicodeUTF8))
 
     @verticalLayout_3.addWidget(@tabWidget)
 
@@ -409,7 +424,6 @@ class Ui_MainWindow
     @statusBar = Qt::StatusBar.new(mainWindow)
     @statusBar.objectName = "statusBar"
     mainWindow.statusBar = @statusBar
-    Qt::Widget.setTabOrder(@tabWidget, @selectRepoEdit)
     Qt::Widget.setTabOrder(@selectRepoEdit, @selectRepoButton)
     Qt::Widget.setTabOrder(@selectRepoButton, @selectBranchComboBox)
     Qt::Widget.setTabOrder(@selectBranchComboBox, @selectBranchButton)
@@ -424,7 +438,8 @@ class Ui_MainWindow
     Qt::Widget.setTabOrder(@getSheetCountButton2, @sheetComboBox2)
     Qt::Widget.setTabOrder(@sheetComboBox2, @sheetEdit2)
     Qt::Widget.setTabOrder(@sheetEdit2, @createDiffImageButton)
-    Qt::Widget.setTabOrder(@createDiffImageButton, @oEagleBinaryEdit)
+    Qt::Widget.setTabOrder(@createDiffImageButton, @tabWidget)
+    Qt::Widget.setTabOrder(@tabWidget, @oEagleBinaryEdit)
     Qt::Widget.setTabOrder(@oEagleBinaryEdit, @oEagleBinaryButton)
     Qt::Widget.setTabOrder(@oEagleBinaryButton, @oSchematicEdit)
     Qt::Widget.setTabOrder(@oSchematicEdit, @oBoardEdit)
@@ -432,7 +447,8 @@ class Ui_MainWindow
     Qt::Widget.setTabOrder(@oRepoPresetEdit, @oRepoPresetButton)
     Qt::Widget.setTabOrder(@oRepoPresetButton, @oRepoPresetBranchEdit)
     Qt::Widget.setTabOrder(@oRepoPresetBranchEdit, @oImageViewer)
-    Qt::Widget.setTabOrder(@oImageViewer, @oSaveButton)
+    Qt::Widget.setTabOrder(@oImageViewer, @oHideTimezone)
+    Qt::Widget.setTabOrder(@oHideTimezone, @oSaveButton)
 
     retranslateUi(mainWindow)
 
@@ -471,7 +487,8 @@ class Ui_MainWindow
     @oHideTimezone.text = Qt::Application.translate("MainWindow", "Hide timezone in repo view", nil, Qt::Application::UnicodeUTF8)
     @oSaveButton.text = Qt::Application.translate("MainWindow", "Save", nil, Qt::Application::UnicodeUTF8)
     @tabWidget.setTabText(@tabWidget.indexOf(@optionsTab), Qt::Application.translate("MainWindow", "Options", nil, Qt::Application::UnicodeUTF8))
-    @tabWidget.setTabText(@tabWidget.indexOf(@tab), Qt::Application.translate("MainWindow", "Info", nil, Qt::Application::UnicodeUTF8))
+    @label.text = Qt::Application.translate("MainWindow", "<p><span style=\"font-size:16pt\"><strong>Geagle</strong></span></p><p><strong>Description:</strong><br />If you are working on an CadSoft EAGLE project with a team and you are tracking your progress with Git, this little programm can help you to see what your team has changed. It makes an diff image which shows the changes on the schematics and boards between the commits.</p><p><strong>Homepage:</strong><br /><a href=\"https://github.com/hurik/geagle\">https://github.com/hurik/geagle</a></p><p><strong>Author:</strong><br />  Andreas Giemza<br /><a href=\"mailto:andreas@giemza.net\">andreas@giemza.net</a><br /><a href=\"http://www.hurik.de\">http://www.hurik.de</a></p><p><strong>Credits:</strong><br />This little programm based on <a href=\"https://gitorious.org/gitedaous/eagle-converter\">eagle-converter</a> by Patrick Franken, he made the countSheets.ulp and the eagle calls.</p>", nil, Qt::Application::UnicodeUTF8)
+    @tabWidget.setTabText(@tabWidget.indexOf(@infoTab), Qt::Application.translate("MainWindow", "Info", nil, Qt::Application::UnicodeUTF8))
     end # retranslateUi
 
     def retranslate_ui(mainWindow)

@@ -1,7 +1,7 @@
-/opt/eagle-6.1.0/bin/eagle
+
 150
 300
 
 
-shotwell
+
 true
