@@ -55,5 +55,8 @@ This little programm based on [eagle-converter](https://gitorious.org/gitedaous/
 
 
 ## Changelog
+##### v1.0.1
+* Now working with Ruby 1.8
+
 ### v1.0.0
 * First release

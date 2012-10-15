@@ -35,7 +35,7 @@ class MainWindow < Qt::MainWindow
 		@currentPath = Dir.getwd
 		@tempPath = @currentPath + "/temp"
 
-		if !File.directory? (@tempPath)
+		if !File.directory?(@tempPath)
 			Dir.mkdir(@tempPath)
 		end
 
@@ -170,6 +170,8 @@ class MainWindow < Qt::MainWindow
 				elsif @ui.sheetEdit1.text != ""
 					sheet1 = @ui.sheetEdit1.text
 				else
+					@ui.statusBar.showMessage("Please select a sheet!", 5000) 
+
 					return				
 				end
 			end
@@ -186,6 +188,8 @@ class MainWindow < Qt::MainWindow
 				elsif @ui.sheetEdit2.text != ""
 					sheet2 = @ui.sheetEdit2.text
 				else
+					@ui.statusBar.showMessage("Please select a sheet!", 5000) 
+
 					return				
 				end
 			end
